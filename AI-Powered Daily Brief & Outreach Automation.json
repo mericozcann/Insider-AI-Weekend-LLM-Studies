@@ -1,0 +1,468 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -816,
+        512
+      ],
+      "id": "34fb7849-0178-4807-8915-de31bdc64a4b",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "search",
+        "query": "in:#social",
+        "sort": "asc",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        -848,
+        -32
+      ],
+      "id": "69bb5915-5683-4225-b061-5af7ce43481f",
+      "name": "Search for messages",
+      "webhookId": "56310fdb-b3ed-40a9-bcfb-fc93ee70f0b3",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "ULTtqKuGVuspwk2J",
+          "name": "Slack account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Summarize the following Slack messages, grouped by author. Provide a concise overview of key points, themes, and any action items. Return in plain text, not markdown.\n\n{{ $input.all().map(item => `${item.json.username.replace(/\\./, ' ')}: ${item.json.text}` ) }}",
+        "options": {
+          "systemMessage": "## Overview\nWrite a personalized outreach email introducing a logistics app for small and medium businesses. Don't add subject\n## Inputs\nName\nEmail\nBusiness (3–5 word descriptor)\n## Style\nReference the business (“for your [business] operations”)\nPersonalize with the recipient’s name\nFriendly, professional, concrete\nDo not mention excluded features or the instructions\n## Output\nProvide only the email body."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -32,
+        -32
+      ],
+      "id": "118da8de-1d75-455f-b190-22a974f7f522",
+      "name": "AI Agent",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        160
+      ],
+      "id": "03210491-d488-45b9-be81-e47f1132dadd",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "NdJjqGP8n60y5pmv",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0A1EGK7JG0",
+          "mode": "list",
+          "cachedResultName": "all-insider-ai-weekend"
+        },
+        "text": "={{ $json.output }} +naber müdür",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        320,
+        -192
+      ],
+      "id": "03295b67-39b9-49f9-b951-15007ad56734",
+      "name": "Send a message",
+      "webhookId": "d2258036-317b-48d2-ae82-600ad4276600",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "ULTtqKuGVuspwk2J",
+          "name": "Slack account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1e1JaOrAU2w_uRi3HD3aXeQGtkHh9bTZvfUW4LT2ijUc",
+          "mode": "list",
+          "cachedResultName": "Lead Generation - Sheet1 (1)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e1JaOrAU2w_uRi3HD3aXeQGtkHh9bTZvfUW4LT2ijUc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 928268437,
+          "mode": "list",
+          "cachedResultName": "Lead Generation - Sheet1 (1)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1e1JaOrAU2w_uRi3HD3aXeQGtkHh9bTZvfUW4LT2ijUc/edit#gid=928268437"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -576,
+        -32
+      ],
+      "id": "fbc93e22-bda3-4b4f-87f1-1086ea8f7870",
+      "name": "Get row(s) in sheet",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZOkWcVBBReXqQvkv",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        -32
+      ],
+      "id": "ecc56f71-f769-4205-a1bc-9a7d22cb35c2",
+      "name": "Limit",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "sendTo": "mericozcan.edu@gmail.com",
+        "subject": "Bussines Opporunity",
+        "emailType": "text",
+        "message": "Hi Alice,\\n\\nMy name is 'meric ozcan', and I'm reaching out because I believe our logistics app could be a valuable tool for your business.\\n\\nAs a Graphic Designer, I imagine you have unique logistical needs, whether it's receiving design supplies, shipping printed materials to clients, or managing deliveries for your projects. These details can sometimes take valuable time away from your creative work.\\n\\nWe've developed an intuitive logistics app specifically designed to simplify these kinds of tasks for small and medium businesses. It helps you efficiently track shipments, manage deliveries, and...",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        320,
+        160
+      ],
+      "id": "12de2a8b-8de7-4873-a8b4-fe09dbbb305b",
+      "name": "Send a message1",
+      "webhookId": "74d82576-712c-419b-9811-62853f502aeb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "PRup6BrY71BG9ypg",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.openweathermap.org/data/2.5/weather?q=Istanbul,TR&appid=a474ebe7d6d2c4a2f4da073438faa267",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -608,
+        352
+      ],
+      "id": "c63ef0a5-da76-4d75-9858-22827da41a6f",
+      "name": "Weather"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -112,
+        496
+      ],
+      "id": "3655f335-4a14-4555-aef7-1e25e560bc1b",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a helpful AI assistant named DailyBrief, designed to create a personalized daily message for a user named Eren. Your role is to compile and present information in a warm, engaging way that's like chatting with a thoughtful friend—keep it balanced, not overly casual or stiffly formal. Return output in Turkish, while keeping english terms in english. This output will be sent in slack so include emojis.\nYou will be provided with the following variables as input:\n{weather_data}: A summary of today's weather, including temperature, conditions, and any notable forecasts.\n{stock_data}: Latest stock updates/news, such as major indices or specific stocks of interest, with current values and news.\nUsing these variables, generate a daily message that starts with a friendly greeting, then covers the weather, followed by stock updates. Keep the message concise, positive, and conversational, aiming for 200-300 words. Structure it naturally, like this:\nGreeting: Address Eren warmly and mention it's the daily update.\nWeather section: Share the weather info in an relatable way, perhaps suggesting what it means for the day.\nStocks section: MUST Present the stock price and news, mention latest news.\nAlways end on an uplifting note, like wishing Eren a great day. Do not add any extra information beyond what's in the variables, and ensure the tone is encouraging and approachable.\nHere the variables:\n# Weather data\n```\nOverview: {{ $json.weather[0].description }}\nMain: {{ $json.main.toJsonString() }}\nWind: {{ $json.wind.toJsonString() }}\n```\n# Stock Data\n```\nPrice: {{ $json.c }} $\nNews: {{ $('TSLA News').item.toJsonString() }}\n```",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        96,
+        496
+      ],
+      "id": "6bebe08f-23fe-4b21-9f97-807983fd38d7",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        96,
+        672
+      ],
+      "id": "0b5daf56-0e56-4f2a-ad42-8105691c393b",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "NdJjqGP8n60y5pmv",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://finnhub.io/api/v1/company-news?symbol=TSLA&from=2025-11-27&to=2025-12-30&token=d4m2a2pr01qr851rflb0d4m2a2pr01qr851rflbg",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -592,
+        512
+      ],
+      "id": "0dbf019d-d92d-4327-bd6a-e4a08779e4e0",
+      "name": "TSLA News"
+    },
+    {
+      "parameters": {
+        "url": "https://finnhub.io/api/v1/quote?symbol=TSLA&token=d4m2a2pr01qr851rflb0d4m2a2pr01qr851rflbg",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -608,
+        656
+      ],
+      "id": "0604473b-c084-4ac9-bd15-3c212eae41e1",
+      "name": "TSLA Price"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0A1EGK7JG0",
+          "mode": "list",
+          "cachedResultName": "all-insider-ai-weekend"
+        },
+        "text": "={{ $json.output }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        496
+      ],
+      "id": "bce9629d-bb97-4a75-8d78-da056a701c1c",
+      "name": "Send a message2",
+      "webhookId": "585b76ad-a136-47e5-85b9-f3c45f47fb67",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "ULTtqKuGVuspwk2J",
+          "name": "Slack account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Weather",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "TSLA News",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "TSLA Price",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search for messages": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        []
+      ]
+    },
+    "Weather": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TSLA News": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "TSLA Price": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9436c4e4-d87b-42bc-b459-4f544b976f8b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ac6d8f06964d6a698b631d27d2a1bb7bd32c31a53c71b3c31c2af46cb1daee95"
+  },
+  "id": "4xJZQHXgsa0Hp8o9",
+  "tags": []
+}
